@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<style>
+		.btn-block {
+			display: block;
+			height: 45px;
+			line-height: 45px;
+    		margin: 10px auto;
+    		color: #fff;
+    		background: #8bc53f;
+    		border-radius: 10px;
+		    text-align: center;
+		    text-decoration: none;
+		   	font-size: 14px;
+		}
+    
+        .content {
+            text-align: left;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+	</style>
+</head>
+<body>
+    
+    <br><br><br>
+
+	<div class="btn-block" onclick="WebViewJavascriptBridge.wxPay('TN20160526')">
+        js调用App的微信支付方法wxPay()
+    </div>
+    <div class="content">演示最基本的调用及参数传递</div>
+    
+    
+	<div class="btn-block" onclick="WebViewJavascriptBridge.wxShare({
+            'title' : '马燕龙个人博客',
+            'description' : '一个专注于编程的技术博客',
+            'url' : 'http://www.mayanlong.com'
+        })">js调用App的微信分享方法wxShare()</div>
+    <div class="content">演示字典参数的使用</div>
+    
+    
+    <div class="btn-block" onclick="WebViewJavascriptBridge.showDialogMessage('马燕龙个人博客', '一个专注于编程的技术博客')">
+        js调用App的弹出对话框方法showDialog()
+    </div>
+    <div class="content">演示传递多个参数的使用，注意js调用时的方法名</div>
+    
+    
+    <div class="btn-block" onclick="WebViewJavascriptBridge.callHandler('jsHandlerFunc')">
+        js调用App的方法后 App再调用js函数执行回调
+    </div>
+    <div class="content" id="js-content">App调用js函数执行回调时 内容会改变</div>
+    <script type="text/javascript">
+        
+        function jsHandlerFunc(argument) {
+            document.getElementById('js-content').innerHTML = "App调用js回调函数啦， 我是" + argument['name'];
+        }
+    
+    </script>
+    
+    
+    
+	
+</body>
+</html>
