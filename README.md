@@ -1,7 +1,5 @@
 ## SwiftJavaScriptCore
-iOS开发中，Swift使用JavaScriptCore与网页进行交互。
-
-
+iOS开发中，Swift使用JavaScriptCore与网页进行交互。添加block方式export ,项目更新到Swift 3
 ## 详细介绍
 点击查看详细文档：[马燕龙个人博客](http://www.mayanlong.com/archives/2016/88.html)
 
