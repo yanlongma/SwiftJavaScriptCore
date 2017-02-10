@@ -8,13 +8,13 @@
 
 import UIKit
 import JavaScriptCore
-
+public typealias myFunctionDefAlias = (@convention(block) (String, String, String,String) -> Void)
 // 定义协议SwiftJavaScriptDelegate 该协议必须遵守JSExport协议
 @objc protocol SwiftJavaScriptDelegate: JSExport {
     
     // js调用App的微信支付功能 演示最基本的用法
-    func wxPay(orderNo: String)
-    
+    //func wxPay(orderNo: String)
+    var wxPay:myFunctionDefAlias? {get}
     // js调用App的微信分享功能 演示字典参数的使用
     func wxShare(dict: [String: AnyObject])
     
@@ -32,13 +32,17 @@ import JavaScriptCore
     weak var controller: UIViewController?
     weak var jsContext: JSContext?
     
-    func wxPay(orderNo: String) {
-        
-        print("订单号：", orderNo)
-        
-        // 调起微信支付逻辑
+   var wxPay:myFunctionDefAlias?
+    override  init() {
+        super.init()
+        self.wxPay = { [unowned self] (foo:String, bar:String, baz: String,zz:String) in
+            self.wxPayIMP(foo, bar: bar, baz: baz,zz:zz)
+        }
     }
     
+    func wxPayIMP(foo: String, bar: String, baz: String,zz:String) {
+        print("call myFunctionImpl");
+    }
     func wxShare(dict: [String: AnyObject]) {
         
         print("分享信息：", dict)
