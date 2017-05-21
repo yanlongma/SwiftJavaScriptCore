@@ -13,16 +13,16 @@ import JavaScriptCore
 @objc protocol SwiftJavaScriptDelegate: JSExport {
     
     // js调用App的微信支付功能 演示最基本的用法
-    func wxPay(orderNo: String)
+    func wxPay(_ orderNo: String)
     
     // js调用App的微信分享功能 演示字典参数的使用
-    func wxShare(dict: [String: AnyObject])
+    func wxShare(_ dict: [String: AnyObject])
     
     // js调用App方法时传递多个参数 并弹出对话框 注意js调用时的函数名
-    func showDialog(title: String, message: String)
+    func showDialog(_ title: String, message: String)
     
     // js调用App的功能后 App再调用js函数执行回调
-    func callHandler(handleFuncName: String)
+    func callHandler(_ handleFuncName: String)
     
 }
 
@@ -32,32 +32,32 @@ import JavaScriptCore
     weak var controller: UIViewController?
     weak var jsContext: JSContext?
     
-    func wxPay(orderNo: String) {
+    func wxPay(_ orderNo: String) {
         
         print("订单号：", orderNo)
         
         // 调起微信支付逻辑
     }
     
-    func wxShare(dict: [String: AnyObject]) {
+    func wxShare(_ dict: [String: AnyObject]) {
         
         print("分享信息：", dict)
         
         // 调起微信分享逻辑
     }
     
-    func showDialog(title: String, message: String) {
+    func showDialog(_ title: String, message: String) {
         
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "确定", style: .Default, handler: nil))
-        self.controller?.presentViewController(alert, animated: true, completion: nil)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "确定", style: .default, handler: nil))
+        self.controller?.present(alert, animated: true, completion: nil)
     }
     
-    func callHandler(handleFuncName: String) {
+    func callHandler(_ handleFuncName: String) {
         
         let jsHandlerFunc = self.jsContext?.objectForKeyedSubscript("\(handleFuncName)")
-        let dict = ["name": "sean", "age": 18]
-        jsHandlerFunc?.callWithArguments([dict])
+        let dict = ["name": "sean", "age": 18] as [String : Any]
+        let _ = jsHandlerFunc?.call(withArguments: [dict])
     }
 }
 
@@ -88,12 +88,12 @@ class ViewController: UIViewController, UIWebViewDelegate {
         
         // 通过js方法名调用方法
         let result2 = context.evaluateScript("sum(num1, num2)")
-        print(result2)  // 输出30
+        print(result2 as AnyObject)  // 输出30
         
         // 通过下标来获取js方法并调用方法
         let squareFunc = context.objectForKeyedSubscript("sum")
-        let result3 = squareFunc.callWithArguments([10, 20]).toString()
-        print(result3)  // 输出30
+        let result3 = squareFunc?.call(withArguments: [10, 20]).toString()
+        print(result3 as AnyObject)  // 输出30
         
     }
     
@@ -105,8 +105,8 @@ class ViewController: UIViewController, UIWebViewDelegate {
         self.webView.scalesPageToFit = true
         
         // 加载本地Html页面
-        let url = NSBundle.mainBundle().URLForResource("demo", withExtension: "html")
-        let request = NSURLRequest(URL: url!)
+        let url = Bundle.main.url(forResource: "demo", withExtension: "html")
+        let request = URLRequest(url: url!)
         
         // 加载网络Html页面 请设置允许Http请求
         //let url = NSURL(string: "http://www.mayanlong.com");
@@ -116,20 +116,20 @@ class ViewController: UIViewController, UIWebViewDelegate {
     }
     
     
-    func webViewDidFinishLoad(webView: UIWebView) {
+    func webViewDidFinishLoad(_ webView: UIWebView) {
         
         
-        self.jsContext = webView.valueForKeyPath("documentView.webView.mainFrame.javaScriptContext") as! JSContext
+        self.jsContext = webView.value(forKeyPath: "documentView.webView.mainFrame.javaScriptContext") as! JSContext
         let model = SwiftJavaScriptModel()
         model.controller = self
         model.jsContext = self.jsContext
         
         // 这一步是将SwiftJavaScriptModel模型注入到JS中，在JS就可以通过WebViewJavascriptBridge调用我们暴露的方法了。
-        self.jsContext.setObject(model, forKeyedSubscript: "WebViewJavascriptBridge")
+        self.jsContext.setObject(model, forKeyedSubscript: "WebViewJavascriptBridge" as NSCopying & NSObjectProtocol)
         
         // 注册到本地的Html页面中
-        let url = NSBundle.mainBundle().URLForResource("demo", withExtension: "html")
-        self.jsContext.evaluateScript(try? String(contentsOfURL: url!, encoding: NSUTF8StringEncoding))
+        let url = Bundle.main.url(forResource: "demo", withExtension: "html")
+        self.jsContext.evaluateScript(try? String(contentsOf: url!, encoding: String.Encoding.utf8))
         
         // 注册到网络Html页面 请设置允许Http请求
         //let url = "http://www.mayanlong.com";
@@ -137,7 +137,7 @@ class ViewController: UIViewController, UIWebViewDelegate {
         //self.jsContext.evaluateScript(try? String(contentsOfURL: NSURL(string: url)!, encoding: NSUTF8StringEncoding))
         
         self.jsContext.exceptionHandler = { (context, exception) in
-            print("exception：", exception)
+            print("exception：", exception as Any)
         }
     }
     
